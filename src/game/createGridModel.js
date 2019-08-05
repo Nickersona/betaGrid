@@ -25,6 +25,10 @@ function createProperty({ id, displayName, initialValue }) {
   }
 }
 
+function cellToObject({ props }) {
+  return props.reduce((acc, prop) => ({...acc, [prop.id]: prop.value}), {})
+}
+
 class QueryableGrid {
   cells
 
@@ -43,11 +47,15 @@ class QueryableGrid {
         this.filters.yEquals(idx),
         this.cells,
       )
-    )
+    ).map(cellToObject)
   }
 
   getCell(row, cell){
-    return this.cell[`${row},${cell}`]
+    return cellToObject(this.cells[`${row},${cell}`])
+  }
+
+  getCells(){
+    return Object.values(this.cells).map(cellToObject);
   }
 
   getRow(idx) {
@@ -56,7 +64,7 @@ class QueryableGrid {
         this.filters.xEquals(idx),
         this.cells,
       )
-    )
+    ).map(cellToObject)
   }
 
   getRows() {

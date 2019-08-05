@@ -27,12 +27,12 @@ const Map = styled.div`
   display: grid;
   // transform: perspective(500px) rotateX(45deg) rotate(45deg);
 
-  ${({size, dimensions}) => css`
+  ${({size, dimensions, edgeSize}) => css`
     grid-template-areas: "${createTemplateAreas(dimensions)}";
     width: ${size * dimensions[0]}px;
     height: ${size * dimensions[1]}px;
-    grid-template-columns: 20px repeat(${dimensions[0]}, ${size}px) 20px;
-    grid-template-rows: 20px repeat(${dimensions[1]}, ${size}px) 20px;
+    grid-template-columns: ${edgeSize}px repeat(${dimensions[0]}, ${size}px) ${edgeSize}px;
+    grid-template-rows: ${edgeSize}px repeat(${dimensions[1]}, ${size}px) ${edgeSize}px;
    `}
 `
 
@@ -105,35 +105,32 @@ class MapBoard extends React.Component {
 
   render() {
     let winner = '';
-    const gridLength = Math.sqrt(this.props.G.cells.length)
-    if (this.props.ctx.gameover) {
-      winner =
-        this.props.ctx.gameover.winner !== undefined ? (
-          <div id="winner">Winner: {this.props.ctx.gameover.winner}</div>
-        ) : (
-          <div id="winner">Draw!</div>
-        );
-    }
+    const { grid } = this.props.G;
+    const rows = grid.getRows();
+    const columns = grid.getColumns();
+    // if (this.props.ctx.gameover) {
+    //   winner =
+    //     this.props.ctx.gameover.winner !== undefined ? (
+    //       <div id="winner">Winner: {this.props.ctx.gameover.winner}</div>
+    //     ) : (
+    //       <div id="winner">Draw!</div>
+    //     );
+    // }
 
-    let cells = [];
-    for (let i = 0; i < gridLength; i++) {
-      for (let j = 0; j < gridLength; j++) {
-        const id = gridLength * i + j;
-        cells.push(
-          <Tile
-            key={id} 
-            id={id}
-            row={i}
-            col={j}
-            onClick={() => this.onClick(id)}
-          />
-        );
-      }
-    }
+    let cells = grid.getCells().map(({x, y, ...rest }) =>
+      <Tile
+        key={`${x}${y}`} 
+        id={`${x}${y}`}
+        row={x}
+        col={y}
+        {...rest}
+        onClick={() => this.onClick(`${x}${y}`)}
+      />
+    );
 
     return (
       <div>
-        <Map size={50} dimensions={[gridLength, gridLength]}>
+        <Map size={50} edgeSize={30} dimensions={[rows.length, columns.length]}>
           {cells}
           <Edge direction="top">Top</Edge>
           <Edge direction="bottom">Bottom</Edge>
