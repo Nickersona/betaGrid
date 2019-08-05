@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { css } from 'styled-components/macro'
 
 
@@ -36,6 +36,17 @@ const Map = styled.div`
    `}
 `
 
+
+const TilePropsContainer = styled.ul`
+  background-color: black;
+  display: none;
+  color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+`;
+
 const TileContainer = styled.div`
   ${props => css`
     grid-column-start: ${props.col + 2}
@@ -43,20 +54,37 @@ const TileContainer = styled.div`
     grid-row-start: ${props.row + 2}
     grid-row-end: ${props.row + 3}
   `}
+
+  position: relative;
+
+  &:hover ${TilePropsContainer} {
+    display: block 
+  }
 `
 
 const TileUi = styled.div`
+  z-index: 0;
+  position: relative;
   border: 1px solid #555;
   background: green;
   height:100%;
   display: block; 
 `
 
+const TileProps = (props) => {
+  return (
+    <TilePropsContainer>
+      { Object.keys(props).map((key) => <li>{key}: {props[key]}</li>) }
+    </TilePropsContainer>
+  );
+}
+
 
 const Tile = (props) => {
   return (
     <TileContainer {...props}>
       <TileUi {...props}  />
+      <TileProps {...props} />
      </TileContainer>
    ); 
 }
